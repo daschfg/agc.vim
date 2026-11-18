@@ -44,16 +44,21 @@ syntax match agcOperator "\%(\k\)\@<![-+*/]\%(\k\)\@!"
 " Block I + Block II basic instructions
 " ---------------------------------------------------------------------------
 syntax keyword agcBasicOp
-      \ AD ADS AUG BZF BZMF CA CAE CAF CCS COM CS DAS DCA DCOM DCS DDOUBL
-      \ DIM DOUBLE DTCB DTCF DV DXCH EDRUPT EXTEND INDEX NDX INHINT LXCH
-      \ MASK MSK MP MSU NOOP OVSK QXCH RAND READ RELINT RESUME RETURN ROR
-      \ RXOR SQUARE SU TC TCR TCAA TCF TS WAND WOR WRITE XCH XLQ XXALQ ZL ZQ
-      \ OVIND XAQ
+      \ AD ADS CA CAE CAF CCS COM CS DAS DDOUBL DOUBLE DTCB DTCF DXCH EXTEND
+      \ INDEX NDX INHINT LXCH MASK MSK NOOP OVSK OVIND RELINT RESUME RETURN
+      \ TC TCR TCAA TCF TS XCH XLQ XXALQ XAQ ZL
 
 " ---------------------------------------------------------------------------
-" Extended / interpretive instructions (valid only after EXTEND)
+" Extended (extracode) instructions (require a preceding EXTEND)
 " ---------------------------------------------------------------------------
 syntax keyword agcExtOp
+      \ AUG BZF BZMF DCA DCOM DCS DIM DV EDRUPT MP MSU QXCH RAND READ ROR
+      \ RXOR SQUARE SU WAND WOR WRITE ZQ
+
+" ---------------------------------------------------------------------------
+" Interpretive instructions (executed by the interpreter, entered via TC INTPRET)
+" ---------------------------------------------------------------------------
+syntax keyword agcInterpOp
       \ ABS ABVAL ARCCOS ACOS ARCSIN ASIN BDDV BDSU BHIZ BMN BOFCLR BOF BOFF
       \ BOFINV BOFSET BON BONCLR BONINV BONSET BOV BOVB BPL BVSU BZE CALL
       \ CALRB CCLRB CCALL CGOTO CLEAR CLR CLRGO COMP COS COSINE CROSS DAD
@@ -66,19 +71,19 @@ syntax keyword agcExtOp
       \ VMOVE VPROJ VSL VSL1 VSL2 VSL3 VSL4 VSL5 VSL6 VSL7 VSL8 VSQ VSR VSR1
       \ VSR2 VSR3 VSR4 VSR5 VSR6 VSR7 VSR8 VSU VTS VXM VXSC VXV
 
-" Extended instructions carrying a trailing '*'.
-syntax match agcExtOp
+" Interpretive instructions carrying a trailing '*'.
+syntax match agcInterpOp
       \ "\<\%(ABS\|BDDV\|BDSU\|BVSU\|CCALL\|CGOTO\|COMP\|COS\|DAD\|DDV\|DLOAD\|DMP\|DMPR\|DMOVE\|DOT\|ITC\|MXV\|NORM\|PDDL\|PDVL\|SIGN\|SLR\|SL\|SLOAD\|SMOVE\|SRR\|SR\|SSP\|STODL\|STOVL\|TAD\|TLOAD\|TSLT\|TSRT\|V/SC\|VAD\|VLOAD\|VMOVE\|VPROJ\|VSLT\|VSL\|VSRT\|VSR\|VSU\|VXM\|VXSC\|VXV\)\*"
 
-" INCR is a basic opcode, but INCR,1 / INCR,2 are extended.  Use a match so
-" the longer comma form below can take precedence.
+" INCR is a basic opcode, but INCR,1 / INCR,2 are interpretive index ops.
+" Use a match so the longer comma form below can take precedence.
 syntax match agcBasicOp "\<INCR\>"
 
-" Extended instructions taking a ",1" / ",2" index suffix.
-syntax match agcExtOp "\<\%(AXC\|AXT\|INCR\|LXA\|LXC\|SXA\|TIX\|XAD\|XCHX\|XSU\),[12]\>"
+" Interpretive index instructions taking a ",1" / ",2" index suffix.
+syntax match agcInterpOp "\<\%(AXC\|AXT\|INCR\|LXA\|LXC\|SXA\|TIX\|XAD\|XCHX\|XSU\),[12]\>"
 
 " Vector scalar divide (contains a slash, no index suffix).
-syntax match agcExtOp "\<V/SC\*\?"
+syntax match agcInterpOp "\<V/SC\*\?"
 
 " ---------------------------------------------------------------------------
 " Pseudo-ops / directives
@@ -153,6 +158,7 @@ highlight def link agcLabel         Function
 highlight def link agcRelativeLabel Label
 highlight def link agcBasicOp       Statement
 highlight def link agcExtOp         Keyword
+highlight def link agcInterpOp      Type
 highlight def link agcPseudo        PreProc
 highlight def link agcDownlink      PreCondit
 highlight def link agcRegister      Identifier

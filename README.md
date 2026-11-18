@@ -4,10 +4,10 @@ Syntax highlighting for **AGC (Apollo Guidance Computer) assembly** - the
 YUL language used to program the Apollo Guidance Computer - for Vim and
 Neovim.
 
-It highlights the full instruction set (Block I and Block II), the extended /
-interpretive instructions, pseudo-ops and directives, downlink directives,
-special registers, labels, numbers, operators, `$`-prefixed symbols and
-includes, and comments.
+It highlights the full instruction set (Block I and Block II), the basic,
+extended and interpretive instructions, pseudo-ops and directives, downlink
+directives, special registers, labels, numbers, operators, `$`-prefixed symbols
+and includes, and comments.
 
 The syntax definitions were developed with reference to AGC/YUL language
 information from the [VirtualAGC](https://github.com/virtualagc/virtualagc/) project.
@@ -39,22 +39,31 @@ Plug 'daschfg/agc.vim'
 
 ## What gets highlighted
 
-| Group | Meaning | Default link |
-|-------|---------|--------------|
-| `agcBasicOp` | Basic instructions (`TC`, `CAF`, `TS`, `DXCH`, `EXTEND`, …) | `Statement` |
-| `agcExtOp` | Extended / interpretive instructions (`STORE`, `STODL`, `DLOAD`, `VXV`, `GOTO`, …) | `Keyword` |
-| `agcPseudo` | Pseudo-ops / directives (`OCT`, `DEC`, `2CADR`, `SETLOC`, `EBANK=`, …) | `PreProc` |
-| `agcDownlink` | Downlink directives (`1DNADR`…`6DNADR`, `DNCHAN`, `DNPTR`) | `PreCondit` |
-| `agcRegister` | Special registers (`A`, `L`, `Q`, `Z`, `EB`, `FB`, `BB`, `ARUPT`, …) | `Identifier` |
-| `agcLabel` | Column-1 statement labels | `Function` |
-| `agcRelativeLabel` | Relative labels (` +1`, `-2`) | `Label` |
-| `agcNumber` | Numeric literals (octal and `D`-suffixed decimal; 8/9 allowed) | `Number` |
-| `agcDollar` | `$`-prefixed symbols / relative refs (`$2`, `$450`, `$/EXTVB`) | `Special` |
-| `agcOperator` | `=`, `=+`, `=-`, `+`, `-`, `*`, `/`, `,` (not inside symbols) | `Operator` |
-| `agcInclude` | `$FILE.agc` include lines | `Include` |
-| `agcComment` | `#` comments | `Comment` |
-| `agcPageComment` | `##` page / `###` file banners | `SpecialComment` |
-| `agcString` | Double-quoted strings | `String` |
+| Group              | Meaning                                                                                                         | Default link     |
+|--------------------|-----------------------------------------------------------------------------------------------------------------|------------------|
+| `agcBasicOp`       | Basic instructions (`TC`, `CAF`, `TS`, `DXCH`, `EXTEND`, ...)                                                   | `Statement`      |
+| `agcExtOp`         | Extended (extracode) instructions, require a preceding `EXTEND` (`MP`, `SU`, `DV`, `DCA`, `BZF`, `WAND`, ...)   | `Keyword`        |
+| `agcInterpOp`      | Interpretive instructions, executed by the interpreter (`DLOAD`, `STORE`, `STODL`, `VXV`, `GOTO`, `AXT,1`, ...) | `Type`           |
+| `agcPseudo`        | Pseudo-ops / directives (`OCT`, `DEC`, `2CADR`, `SETLOC`, `EBANK=`, ...)                                        | `PreProc`        |
+| `agcDownlink`      | Downlink directives (`1DNADR`...`6DNADR`, `DNCHAN`, `DNPTR`)                                                    | `PreCondit`      |
+| `agcRegister`      | Special registers (`A`, `L`, `Q`, `Z`, `EB`, `FB`, `BB`, `ARUPT`, ...)                                          | `Identifier`     |
+| `agcLabel`         | Column-1 statement labels                                                                                       | `Function`       |
+| `agcRelativeLabel` | Relative labels (` +1`, `-2`)                                                                                   | `Label`          |
+| `agcNumber`        | Numeric literals (octal and `D`-suffixed decimal; 8/9 allowed)                                                  | `Number`         |
+| `agcDollar`        | `$`-prefixed symbols / relative refs (`$2`, `$450`, `$/EXTVB`)                                                  | `Special`        |
+| `agcOperator`      | `=`, `=+`, `=-`, `+`, `-`, `*`, `/`, `,` (not inside symbols)                                                   | `Operator`       |
+| `agcInclude`       | `$FILE.agc` include lines                                                                                       | `Include`        |
+| `agcComment`       | `#` comments                                                                                                    | `Comment`        |
+| `agcPageComment`   | `##` page / `###` file banners                                                                                  | `SpecialComment` |
+| `agcString`        | Double-quoted strings                                                                                           | `String`         |
+
+There are three instruction classes:
+
+- **Basic** instructions are decoded directly by the CPU.
+- **Extended** instructions must be preceded by an `EXTEND`. So `agcExtOp`
+  doubles as an "`EXTEND` needed here" cue.
+- **Interpretive** instructions are the interpreter's own byte-code, not CPU
+  opcodes. They are reached by calling the interpreter (`TC INTPRET`).
 
 Recolour any of these in your colourscheme, e.g.:
 
